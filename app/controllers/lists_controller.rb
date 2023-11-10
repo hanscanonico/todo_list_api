@@ -3,18 +3,18 @@
 class ListsController < ApplicationController
   before_action :set_list, only: %i[show update destroy]
 
-  # GET /api/lists
+  # GET /lists
   def index
     @lists = List.all
     render json: @lists
   end
 
-  # GET /api/lists/1
+  # GET /lists/1
   def show
     render json: @list
   end
 
-  # POST /api/lists
+  # POST /lists
   def create
     @list = List.new(list_params)
     if @list.save
@@ -24,7 +24,7 @@ class ListsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /api/lists/1
+  # PATCH/PUT /lists/1
   def update
     if @list.update(list_params)
       render json: @list
@@ -33,7 +33,7 @@ class ListsController < ApplicationController
     end
   end
 
-  # DELETE /api/lists/1
+  # DELETE /lists/1
   def destroy
     @list.destroy
     render json: { message: 'List was successfully destroyed.' }

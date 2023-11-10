@@ -19,7 +19,7 @@ class TasksController < ApplicationController
   def create
     @task = @list.tasks.new(task_params)
     if @task.save
-      render json: @task, status: :created, location: api_list_task_url(@list, @task)
+      render json: @task, status: :created, location: list_tasks_url(@list, @task)
     else
       render json: @task.errors, status: :unprocessable_entity
     end
