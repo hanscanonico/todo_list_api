@@ -3,6 +3,7 @@
 class TasksController < ApplicationController
   before_action :set_list
   before_action :set_task, only: %i[show update destroy]
+  before_action :check_list_existence
 
   # GET /lists/:list_id/tasks
   def index
@@ -40,6 +41,13 @@ class TasksController < ApplicationController
     render json: { message: 'Task was successfully destroyed.' }
   end
 
+  # PATCH /lists/:list_id/tasks/:id/toggle
+  def toggle
+    @task = @list.tasks.find(params[:id])
+    @task.update(done: !@task.done)
+    render json: @task
+  end
+
   private
 
   def set_list
@@ -52,5 +60,11 @@ class TasksController < ApplicationController
 
   def task_params
     params.require(:task).permit(:name, :done)
+  end
+
+  def check_list_existence
+    return if List.exists?(params[:list_id])
+
+    render json: { error: 'List not found' }, status: :not_found
   end
 end

@@ -1,0 +1,88 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/lists":
+    post:
+      summary: Creates a new list
+      tags:
+      - Lists
+      parameters: []
+      responses:
+        '201':
+          description: list created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+    get:
+      summary: Retrieves all lists
+      tags:
+      - Lists
+      responses:
+        '200':
+          description: lists found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                  required:
+                  - id
+                  - name
+  "/lists/{id}":
+    delete:
+      summary: Deletes a list
+      tags:
+      - Lists
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list deleted
+    put:
+      summary: Updates a list
+      tags:
+      - Lists
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
