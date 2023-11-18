@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  title: Lists API
+  version: 1.0.0
+paths:
+  /lists:
+    get:
+      summary: Retrieves all lists
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: A list of lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/List'
+    post:
+      summary: Creates a new list
+      tags:
+        - Lists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '201':
+          description: New list created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+  /lists/{list_id}/tasks:
+    get:
+      summary: Retrieves all tasks for a specific list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: An array of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      summary: Creates a new task in a specific list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: New task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+  /lists/{list_id}/tasks/{id}:
+    get:
+      summary: Retrieves a specific task from a list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    patch:
+      summary: Updates a specific task in a list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      summary: Deletes a specific task from a list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /lists/{list_id}/tasks/{id}/toggle:
+    patch:
+      summary: Toggles a specific task in a list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task toggled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+components:
+  schemas:
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+        - name
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        done:
+          type: boolean
+      required:
+        - name
+        - done
+    TaskCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        done:
+          type: boolean
+      required:
+        - name
+    TaskUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        done:
+          type: boolean

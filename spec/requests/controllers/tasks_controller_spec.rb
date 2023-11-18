@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require 'swagger_helper'
 
 RSpec.describe TasksController, type: :controller do
   let!(:list1) { create(:list, name: 'list 1') }
-  let!(:task1) { create(:task, name: 'task 1', list: list1) }
+  let!(:task1) { create(:task, name: 'task 1', list: list1, done: false) }
   let!(:task2) { create(:task, name: 'task 2', list: list1) }
 
   describe '#create' do
@@ -42,6 +42,26 @@ RSpec.describe TasksController, type: :controller do
       put :update, params: { id: task1.id, list_id: list1.id, task: { name: 'Updated Task' } }
       expect(response).to have_http_status(:success)
       expect(task1.reload.name).to eq('Updated Task')
+    end
+  end
+
+  describe '#toggle' do
+    context 'when the task is not done' do
+      it 'does the task' do
+        expect(task1.done).to eq(false)
+        patch :toggle, params: { id: task1.id, list_id: list1.id }
+        expect(response).to have_http_status(:success)
+        expect(task1.reload.done).to eq(true)
+      end
+    end
+    context 'when the task is done' do
+      let!(:task1) { create(:task, name: 'task 1', list: list1, done: true) }
+      it 'undoes the task' do
+        expect(task1.done).to eq(true)
+        patch :toggle, params: { id: task1.id, list_id: list1.id }
+        expect(response).to have_http_status(:success)
+        expect(task1.reload.done).to eq(false)
+      end
     end
   end
 end
