@@ -2,73 +2,75 @@
 
 require 'swagger_helper'
 
-RSpec.describe 'Lists API 2', type: :request do
-  path '/lists' do
-    post 'Creates a new list' do
-      tags 'Lists'
-      consumes 'application/json'
-      parameter name: :list, in: :body, schema: {
-        type: :object,
-        properties: {
-          name: { type: :string }
-        },
-        required: ['name']
-      }
+RSpec.describe ListsController, type: :controller do
+  describe '#create' do
+    it 'creates a new list' do
+      expect do
+        post :create, params: { list: { name: 'New List' } }
+      end.to change(List, :count).by(1)
+      expect(response).to have_http_status(:created)
+      expect(JSON.parse(response.body)['name']).to eq('New List')
+    end
+  end
 
-      response '201', 'list created' do
-        let(:list) { { name: 'New List' } }
-        run_test!
+  describe '#index' do
+    let!(:list1) { List.create(name: 'List 1') }
+    let!(:list2) { List.create(name: 'List 2') }
+
+    it 'retrieves all lists' do
+      get :index
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body).size).to eq(2)
+      expect(JSON.parse(response.body).map { |l| l['name'] }).to match_array(['List 1', 'List 2'])
+    end
+  end
+
+  describe '#destroy' do
+    let!(:list) { List.create(name: 'List to delete') }
+
+    it 'deletes a list' do
+      expect do
+        delete :destroy, params: { id: list.id }
+      end.to change(List, :count).by(-1)
+      expect(response).to have_http_status(:ok)
+    end
+
+    context 'when the list has tasks' do
+      let!(:task) { Task.create(name: 'Task 1', list:) }
+
+      it 'deletes the list and its tasks' do
+        expect do
+          delete :destroy, params: { id: list.id }
+        end.to change(List, :count).by(-1).and change(Task, :count).by(-1)
+        expect(response).to have_http_status(:ok)
       end
     end
 
-    get 'Retrieves all lists' do
-      tags 'Lists'
-      produces 'application/json'
-
-      response '200', 'lists found' do
-        schema type: :array,
-               items: {
-                 type: :object,
-                 properties: {
-                   id: { type: :integer },
-                   name: { type: :string }
-                 },
-                 required: %w[id name]
-               }
-
-        run_test!
+    context 'when the list does not exist' do
+      it 'returns a not found error' do
+        delete :destroy, params: { id: 9999 }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('List not found')
       end
     end
   end
 
-  path '/lists/{id}' do
-    delete 'Deletes a list' do
-      tags 'Lists'
-      produces 'application/json'
-      parameter name: :id, in: :path, type: :integer
+  describe '#update' do
+    let!(:list) { List.create(name: 'List to update') }
 
-      response '200', 'list deleted' do
-        let(:id) { List.create(name: 'List to delete').id }
-        run_test!
-      end
+    it 'updates a list' do
+      put :update, params: { id: list.id, list: { name: 'Updated List' } }
+      expect(response).to have_http_status(:ok)
+      expect(list.reload.name).to eq('Updated List')
     end
 
-    put 'Updates a list' do
-      tags 'Lists'
-      consumes 'application/json'
-      parameter name: :id, in: :path, type: :integer
-      parameter name: :list, in: :body, schema: {
-        type: :object,
-        properties: {
-          name: { type: :string }
-        },
-        required: ['name']
-      }
-
-      response '200', 'list updated' do
-        let(:id) { List.create(name: 'List to update').id }
-        let(:list) { { name: 'Updated List' } }
-        run_test!
+    context 'when the list does not exist' do
+      it 'returns a not found error' do
+        put :update, params: { id: 9999, list: { name: 'Updated List' } }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('List not found')
       end
     end
   end

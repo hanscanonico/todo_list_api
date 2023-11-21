@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class TasksController < ApplicationController
-  before_action :set_list
-  before_action :set_task, only: %i[show update destroy]
   before_action :check_list_existence
+  before_action :set_list
+  before_action :check_task_existence, only: %i[show update destroy toggle]
+  before_action :set_task, only: %i[show update destroy toggle]
 
   # GET /lists/:list_id/tasks
   def index
@@ -66,5 +67,11 @@ class TasksController < ApplicationController
     return if List.exists?(params[:list_id])
 
     render json: { error: 'List not found' }, status: :not_found
+  end
+
+  def check_task_existence
+    return if Task.exists?(params[:id])
+
+    render json: { error: 'Task not found' }, status: :not_found
   end
 end

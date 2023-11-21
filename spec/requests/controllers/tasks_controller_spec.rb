@@ -34,14 +34,50 @@ RSpec.describe TasksController, type: :controller do
 
       expect(response).to have_http_status(:success)
     end
+
+    context 'when the list does not exist' do
+      it 'returns a not found error' do
+        delete :destroy, params: { list_id: 9999, id: task1.id }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('List not found')
+      end
+    end
+
+    context 'when the task does not exist' do
+      it 'returns a not found error' do
+        delete :destroy, params: { list_id: list1.id, id: 9999 }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('Task not found')
+      end
+    end
   end
 
-  describe '#put' do
+  describe '#update' do
     it 'updates the list' do
       expect(task1.name).to eq('task 1')
       put :update, params: { id: task1.id, list_id: list1.id, task: { name: 'Updated Task' } }
       expect(response).to have_http_status(:success)
       expect(task1.reload.name).to eq('Updated Task')
+    end
+
+    context 'when the list does not exist' do
+      it 'returns a not found error' do
+        delete :update, params: { list_id: 9999, id: task1.id }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('List not found')
+      end
+    end
+
+    context 'when the task does not exist' do
+      it 'returns a not found error' do
+        delete :update, params: { list_id: list1.id, id: 9999 }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('Task not found')
+      end
     end
   end
 
@@ -61,6 +97,24 @@ RSpec.describe TasksController, type: :controller do
         patch :toggle, params: { id: task1.id, list_id: list1.id }
         expect(response).to have_http_status(:success)
         expect(task1.reload.done).to eq(false)
+      end
+    end
+
+    context 'when the list does not exist' do
+      it 'returns a not found error' do
+        patch :toggle, params: { list_id: 9999, id: task1.id }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('List not found')
+      end
+    end
+
+    context 'when the task does not exist' do
+      it 'returns a not found error' do
+        patch :toggle, params: { list_id: list1.id, id: 9999 }
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['error']).to eq('Task not found')
       end
     end
   end

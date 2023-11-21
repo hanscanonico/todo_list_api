@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ListsController < ApplicationController
+  before_action :check_list_existence, only: %i[show update destroy]
   before_action :set_list, only: %i[show update destroy]
 
   # GET /lists
@@ -47,5 +48,11 @@ class ListsController < ApplicationController
 
   def list_params
     params.require(:list).permit(:name)
+  end
+
+  def check_list_existence
+    return if List.exists?(params[:id])
+
+    render json: { error: 'List not found' }, status: :not_found
   end
 end
