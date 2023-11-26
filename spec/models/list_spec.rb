@@ -14,6 +14,16 @@ RSpec.describe List, type: :model do
       list = List.new(name: nil)
       expect(list).not_to be_valid
     end
+
+    it 'is not valid with a name shorter than 2 characters' do
+      list = List.new(name: 'a')
+      expect(list).not_to be_valid
+    end
+
+    it 'is not valid with a name longer than 30 characters' do
+      list = List.new(name: 'a' * 31)
+      expect(list).not_to be_valid
+    end
   end
 
   # Test suite for List model associations
