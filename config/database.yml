@@ -26,5 +26,10 @@ test:
   database: storage/test.sqlite3
 
 production:
-  <<: *default
-  database: storage/production.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  database: todo-list-api-db
+  pool: 5
+  username: hcanonico
+  password: hans_perso
+  host: https://todo-list-api-db.fly.dev/

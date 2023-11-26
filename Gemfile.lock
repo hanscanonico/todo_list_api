@@ -90,6 +90,8 @@ GEM
       irb (>= 1.5.0)
       reline (>= 0.3.1)
     diff-lcs (1.5.0)
+    dockerfile-rails (1.5.12)
+      rails (>= 3.0.0)
     drb (2.1.1)
       ruby2_keywords
     error_highlight (0.5.1)
@@ -215,6 +217,11 @@ GEM
       actionpack (>= 3.1, < 7.2)
       railties (>= 3.1, < 7.2)
     ruby2_keywords (0.0.5)
+    sentry-rails (5.13.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.13.0)
+    sentry-ruby (5.13.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sqlite3 (1.6.8-aarch64-linux)
     sqlite3 (1.6.8-arm64-darwin)
     sqlite3 (1.6.8-x86_64-linux)
@@ -238,6 +245,7 @@ DEPENDENCIES
   bootsnap
   byebug
   debug
+  dockerfile-rails (>= 1.5)
   error_highlight (>= 0.4.0)
   factory_bot_rails
   pg
@@ -247,6 +255,8 @@ DEPENDENCIES
   rswag-api
   rswag-specs
   rswag-ui
+  sentry-rails (~> 5.13)
+  sentry-ruby (~> 5.13)
   sqlite3 (~> 1.4)
   tzinfo-data
 
