@@ -34,6 +34,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/List'
+  /lists/{id}:
+    get:
+      summary: Retrieves a specific list
+      tags:
+        - Lists
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A single list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+    patch:
+      summary: Updates a specific list
+      tags:
+        - Lists
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '200':
+          description: List updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+    delete:
+      summary: Deletes a specific list
+      tags:
+        - Lists
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: List or Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /lists/{list_id}/tasks:
     get:
       summary: Retrieves all tasks for a specific list
@@ -128,6 +198,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '404':
+          description: List or Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
     delete:
       summary: Deletes a specific task from a list
       tags:
@@ -153,6 +232,15 @@ paths:
                 properties:
                   message:
                     type: string
+        '404':
+          description: List not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /lists/{list_id}/tasks/{id}/toggle:
     patch:
       summary: Toggles a specific task in a list
@@ -176,6 +264,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '404':
+          description: List or Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
 components:
   schemas:
     List:
