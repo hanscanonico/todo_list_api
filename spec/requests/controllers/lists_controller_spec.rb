@@ -76,11 +76,11 @@ RSpec.describe ListsController, type: :request do
     end
   end
 
-  describe 'PUT /lists/{id}' do
+  describe 'PATCH /lists/{id}' do
     let!(:list) { List.create(name: 'List to update') }
 
     it 'updates a list' do
-      put(list_path(list), params: { name: 'Updated List' }.to_json, headers:)
+      patch(list_path(list), params: { name: 'Updated List' }.to_json, headers:)
 
       expect(response).to have_http_status(:ok)
       expect(list.reload.name).to eq('Updated List')
