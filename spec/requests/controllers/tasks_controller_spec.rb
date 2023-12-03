@@ -2,91 +2,128 @@
 
 require 'swagger_helper'
 
-RSpec.describe TasksController, type: :controller do
+RSpec.describe TasksController, type: :request do
+  include Committee::Rails::Test::Methods
+
   let!(:list1) { create(:list, name: 'list 1') }
   let!(:task1) { create(:task, name: 'task 1', list: list1, done: false) }
   let!(:task2) { create(:task, name: 'task 2', list: list1) }
 
-  describe '#create' do
+  let!(:headers) { { 'Content-Type' => 'application/json' } }
+
+  describe 'POST /lists/:list_id/tasks' do
     it 'creates a new task' do
       expect do
-        post :create, params: { list_id: list1.id, task: { name: 'Task 3' } }
+        post list_tasks_path(list1), params: { name: 'Task 3' }.to_json,
+                                     headers:
       end.to change(Task, :count).by(1)
-      expect(response.parsed_body['name']).to eq('Task 3')
-      expect(response).to have_http_status(:success)
+
+      assert_request_schema_confirm
+      assert_response_schema_confirm(201)
+
+      expect(JSON.parse(response.body)['name']).to eq('Task 3')
     end
   end
 
-  describe '#index' do
+  describe 'GET /lists/:list_id/tasks' do
     it 'shows all tasks for a specific list' do
-      get :index, params: { list_id: list1.id }
-      expect(response).to have_http_status(:success)
+      get list_tasks_path(list1)
+
+      assert_request_schema_confirm
+      assert_response_schema_confirm(200)
+
       expect(response.parsed_body.size).to eq(2)
       expect(response.parsed_body).to include(include('name' => 'task 1'), include('name' => 'task 2'))
     end
   end
 
-  describe '#destroy' do
+  describe 'DELETE /lists/:list_id/tasks/{id}' do
     it 'deletes a task' do
       expect do
-        delete :destroy, params: { list_id: list1.id, id: task1.id }
+        delete list_task_path(list1, task1)
       end.to change(Task, :count).by(-1)
 
-      expect(response).to have_http_status(:success)
+      assert_request_schema_confirm
+      assert_response_schema_confirm(200)
     end
 
     context 'when the list does not exist' do
+      let!(:not_existing_list_id) { 9999 }
       it 'returns a not found error' do
-        delete :destroy, params: { list_id: 9999, id: task1.id }
-        expect(response).to have_http_status(:not_found)
+        delete list_task_path(not_existing_list_id, task1)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('List not found')
       end
     end
 
     context 'when the task does not exist' do
+      let!(:not_existing_task_id) { 9999 }
       it 'returns a not found error' do
-        delete :destroy, params: { list_id: list1.id, id: 9999 }
-        expect(response).to have_http_status(:not_found)
+        delete list_task_path(list1, not_existing_task_id)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Task not found')
       end
     end
   end
 
-  describe '#update' do
-    it 'updates the list' do
+  describe 'PATCH /lists/:list_id/tasks/{id}' do
+    it 'updates the task' do
       expect(task1.name).to eq('task 1')
-      put :update, params: { id: task1.id, list_id: list1.id, task: { name: 'Updated Task' } }
-      expect(response).to have_http_status(:success)
+
+      patch(list_task_path(list1, task1), params: { task: { name: 'Updated Task' } }.to_json, headers:)
+
+      assert_request_schema_confirm
+      assert_response_schema_confirm(200)
+
       expect(task1.reload.name).to eq('Updated Task')
     end
 
     context 'when the list does not exist' do
+      let!(:not_existing_list_id) { 9999 }
+
       it 'returns a not found error' do
-        delete :update, params: { list_id: 9999, id: task1.id }
-        expect(response).to have_http_status(:not_found)
+        patch(list_task_path(not_existing_list_id, task1), params: { task: { name: 'Updated Task' } }.to_json, headers:)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('List not found')
       end
     end
 
     context 'when the task does not exist' do
+      let!(:not_existing_task_id) { 9999 }
+
       it 'returns a not found error' do
-        delete :update, params: { list_id: list1.id, id: 9999 }
-        expect(response).to have_http_status(:not_found)
+        patch(list_task_path(list1, not_existing_task_id), params: { task: { name: 'Updated Task' } }.to_json, headers:)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Task not found')
       end
     end
   end
 
-  describe '#toggle' do
+  describe 'PATCH /lists/:list_id/tasks/{id}/toggle' do
     context 'when the task is not done' do
       it 'does the task' do
         expect(task1.done).to eq(false)
-        patch :toggle, params: { id: task1.id, list_id: list1.id }
-        expect(response).to have_http_status(:success)
+        patch toggle_list_task_path(list1, task1)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(200)
+
         expect(task1.reload.done).to eq(true)
       end
     end
@@ -94,25 +131,38 @@ RSpec.describe TasksController, type: :controller do
       let!(:task1) { create(:task, name: 'task 1', list: list1, done: true) }
       it 'undoes the task' do
         expect(task1.done).to eq(true)
-        patch :toggle, params: { id: task1.id, list_id: list1.id }
-        expect(response).to have_http_status(:success)
+        patch toggle_list_task_path(list1, task1)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(200)
+
         expect(task1.reload.done).to eq(false)
       end
     end
 
     context 'when the list does not exist' do
+      let!(:not_existing_list_id) { 9999 }
+
       it 'returns a not found error' do
-        patch :toggle, params: { list_id: 9999, id: task1.id }
-        expect(response).to have_http_status(:not_found)
+        patch toggle_list_task_path(not_existing_list_id, task1)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('List not found')
       end
     end
 
     context 'when the task does not exist' do
+      let!(:not_existing_task_id) { 9999 }
+
       it 'returns a not found error' do
-        patch :toggle, params: { list_id: list1.id, id: 9999 }
-        expect(response).to have_http_status(:not_found)
+        patch toggle_list_task_path(list1, not_existing_task_id)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Task not found')
       end

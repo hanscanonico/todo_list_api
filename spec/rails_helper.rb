@@ -41,7 +41,13 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
   config.include FactoryBot::Syntax::Methods
-
+  config.add_setting :committee_options
+  config.committee_options = {
+    schema_path: Rails.root.join('public', 'api_docs', 'api_documentation.yml'),
+    query_hash_key: 'rack.request.query_hash',
+    parse_response_by_content_type: false,
+    strict_reference_validation: true
+  }
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 
