@@ -26,7 +26,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/List'
+              $ref: '#/components/schemas/ListCreate'
       responses:
         '201':
           description: New list created
@@ -280,6 +280,13 @@ components:
       properties:
         id:
           type: integer
+        name:
+          type: string
+      required:
+        - name
+    ListCreate:
+      type: object
+      properties:
         name:
           type: string
       required:
