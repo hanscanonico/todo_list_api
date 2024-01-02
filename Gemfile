@@ -13,7 +13,8 @@ gem "puma", ">= 5.0"
 gem 'pg'
 
 gem 'devise'
-
+gem 'faker'
+gem 'devise-jwt'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"

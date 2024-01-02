@@ -21,7 +21,7 @@ RSpec.describe TasksController, type: :request do
       assert_request_schema_confirm
       assert_response_schema_confirm(201)
 
-      expect(JSON.parse(response.body)['name']).to eq('Task 3')
+      expect(json['name']).to eq('Task 3')
     end
   end
 
@@ -55,8 +55,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('List not found')
+        expect(json['error']).to eq('List not found')
       end
     end
 
@@ -68,8 +67,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('Task not found')
+        expect(json['error']).to eq('Task not found')
       end
     end
   end
@@ -95,8 +93,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('List not found')
+        expect(json['error']).to eq('List not found')
       end
     end
 
@@ -109,8 +106,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('Task not found')
+        expect(json['error']).to eq('Task not found')
       end
     end
   end
@@ -149,8 +145,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('List not found')
+        expect(json['error']).to eq('List not found')
       end
     end
 
@@ -163,8 +158,7 @@ RSpec.describe TasksController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('Task not found')
+        expect(json['error']).to eq('Task not found')
       end
     end
   end

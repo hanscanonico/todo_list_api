@@ -1,34 +1,40 @@
 # frozen_string_literal: true
 
-class Users::PasswordsController < Devise::PasswordsController
-  # GET /resource/password/new
-  # def new
-  #   super
-  # end
+# app/controllers/users/passwords_controller.rb
 
-  # POST /resource/password
-  # def create
-  #   super
-  # end
+module Users
+  class PasswordsController < Devise::PasswordsController
+    respond_to :json
 
-  # GET /resource/password/edit?reset_password_token=abcdef
-  # def edit
-  #   super
-  # end
+    # POST /resource/password
+    def create
+      self.resource = resource_class.send_reset_password_instructions(resource_params)
+      yield resource if block_given?
 
-  # PUT /resource/password
-  # def update
-  #   super
-  # end
+      if successfully_sent?(resource)
+        render json: { message: 'Reset password instructions sent.' }, status: :ok
+      else
+        render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
 
-  # protected
+    # PUT /resource/password
+    def update
+      self.resource = resource_class.reset_password_by_token(resource_params)
+      yield resource if block_given?
 
-  # def after_resetting_password_path_for(resource)
-  #   super(resource)
-  # end
+      if resource.errors.empty?
+        resource.unlock_access! if unlockable?(resource)
+        render json: { message: 'Password reset successfully.' }, status: :ok
+      else
+        render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
 
-  # The path used after sending reset password instructions
-  # def after_sending_reset_password_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
+    protected
+
+    def resource_params
+      params.require(:user).permit(:email, :password, :password_confirmation, :reset_password_token)
+    end
+  end
 end
