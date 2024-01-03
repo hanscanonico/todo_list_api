@@ -96,7 +96,7 @@ Rails.application.configure do
     port: 587,
     authentication: :plain,
     user_name: 'apikey',
-    password: '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',
+    password: Rails.application.credentials.mail_api_key,
     domain: 'em7215.spanishcourseonline.com',
     enable_starttls_auto: true
   }
