@@ -306,6 +306,17 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.devise_jwt_secret_key!
+    jwt.dispatch_requests = [
+      ['POST', %r{^/users/sign_in$}]
+    ]
+
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/users/sign_out$}]
+    ]
+
+    jwt.request_formats = {
+      user: [:json]
+    }
   end
   # ==> Configuration for :registerable
 
