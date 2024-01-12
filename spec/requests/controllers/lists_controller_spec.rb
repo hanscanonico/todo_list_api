@@ -17,7 +17,7 @@ RSpec.describe ListsController, type: :request do
       assert_request_schema_confirm
       assert_response_schema_confirm(201)
 
-      expect(JSON.parse(response.body)['name']).to eq('New List')
+      expect(json['name']).to eq('New List')
     end
   end
 
@@ -31,8 +31,8 @@ RSpec.describe ListsController, type: :request do
       assert_request_schema_confirm
       assert_response_schema_confirm(200)
 
-      expect(JSON.parse(response.body).size).to eq(2)
-      expect(JSON.parse(response.body).map { |l| l['name'] }).to match_array(['List 1', 'List 2'])
+      expect(json.size).to eq(2)
+      expect(json.map { |l| l['name'] }).to match_array(['List 1', 'List 2'])
     end
   end
 
@@ -70,8 +70,7 @@ RSpec.describe ListsController, type: :request do
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
 
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('List not found')
+        expect(json['error']).to eq('List not found')
       end
     end
   end
@@ -93,8 +92,7 @@ RSpec.describe ListsController, type: :request do
         put(list_path(list), params: { name: 'Updated List' }.to_json, headers:)
 
         expect(response).to have_http_status(:not_found)
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('List not found')
+        expect(json['error']).to eq('List not found')
       end
     end
   end
