@@ -28,7 +28,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.0 # or the Ruby version you use
+          ruby-version: 3.1.2
 
       - name: Install Dependencies
         run: |
@@ -50,3 +50,4 @@ jobs:
           RAILS_ENV: test
         run: |
           bundle exec rspec # or your test suite command
+ 
