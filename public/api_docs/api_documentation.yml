@@ -17,6 +17,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/List'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new list
       tags:
@@ -33,7 +35,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/List'
+                $ref: '#/components/schemas/ListCreate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /lists/{id}:
     get:
       summary: Retrieves a specific list
@@ -52,6 +56,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/List'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     patch:
       summary: Updates a specific list
       tags:
@@ -75,6 +81,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/List'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     delete:
       summary: Deletes a specific list
       tags:
@@ -95,6 +103,8 @@ paths:
                 properties:
                   message:
                     type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: List or Task not found
           content:
@@ -124,6 +134,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new task in a specific list
       tags:
@@ -147,6 +159,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: List not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /lists/{list_id}/tasks/{id}:
     get:
       summary: Retrieves a specific task from a list
@@ -170,6 +193,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     patch:
       summary: Updates a specific task in a list
       tags:
@@ -207,6 +232,8 @@ paths:
                 properties:
                   error:
                     type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
     delete:
       summary: Deletes a specific task from a list
       tags:
@@ -232,6 +259,8 @@ paths:
                 properties:
                   message:
                     type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: List not found
           content:
@@ -264,6 +293,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: List or Task not found
           content:
@@ -484,3 +515,13 @@ components:
           type: string
         done:
           type: boolean
+  responses:
+    UnauthorizedError:
+      description: Unauthorized user
+      content:
+        application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
