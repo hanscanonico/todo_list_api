@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe List, type: :model do
+  let!(:user) { create(:user) }
   # Test suite for validating the presence of the list's name
   describe 'validations' do
     it 'is valid with valid attributes' do
-      list = List.new(name: 'Groceries')
+      list = List.new(name: 'Groceries', user:)
       expect(list).to be_valid
     end
 

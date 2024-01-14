@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class TasksController < ApplicationController
+  before_action :authenticate_user!
   before_action :check_list_existence
   before_action :set_list
   before_action :check_task_existence, only: %i[show update destroy toggle]
@@ -52,7 +53,7 @@ class TasksController < ApplicationController
   private
 
   def set_list
-    @list = List.find(params[:list_id])
+    @list = current_user.lists.find(params[:list_id])
   end
 
   def set_task
@@ -64,13 +65,13 @@ class TasksController < ApplicationController
   end
 
   def check_list_existence
-    return if List.exists?(params[:list_id])
+    return if current_user.lists.exists?(params[:list_id])
 
     render json: { error: 'List not found' }, status: :not_found
   end
 
   def check_task_existence
-    return if Task.exists?(params[:id])
+    return if current_user.tasks.exists?(params[:id])
 
     render json: { error: 'Task not found' }, status: :not_found
   end

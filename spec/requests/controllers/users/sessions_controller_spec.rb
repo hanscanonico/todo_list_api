@@ -5,11 +5,9 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe Devise::SessionsController, type: :request do
   include Committee::Rails::Test::Methods
-  let!(:user) do
-    user = create(:user, confirmation_sent_at: Date.today, confirmation_token: 'abcde')
-    user.confirm
-    user
-  end
+
+  let!(:user) { create(:user, confirmation_sent_at: Date.today, confirmation_token: 'abcde').tap(&:confirm) }
+
   let!(:headers) { { 'Accept' => 'application/json', 'Content-Type' => 'application/json' } }
 
   describe 'POST /users/sign_in' do
