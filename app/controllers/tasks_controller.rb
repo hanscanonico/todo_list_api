@@ -21,6 +21,8 @@ class TasksController < ApplicationController
   # POST /lists/:list_id/tasks
   def create
     @task = @list.tasks.new(task_params)
+    last_task_order = @list.tasks.maximum(:order)
+    @task.order = last_task_order ? last_task_order + 1 : 1
     if @task.save
       render json: @task, status: :created, location: list_tasks_url(@list, @task)
     else

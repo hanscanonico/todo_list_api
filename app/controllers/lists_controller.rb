@@ -19,6 +19,8 @@ class ListsController < ApplicationController
   # POST /lists
   def create
     @list = current_user.lists.new(list_params)
+    last_list_order = current_user.lists.maximum(:order)
+    @list.order = last_list_order ? last_list_order + 1 : 1
     if @list.save
       render json: @list, status: :created, location: list_url(@list)
     else

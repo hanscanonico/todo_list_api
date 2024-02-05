@@ -36,10 +36,10 @@ RSpec.describe ListsController, type: :request do
   end
 
   describe 'GET /lists' do
-    let!(:list1) { List.create(name: 'List 1', user:) }
-    let!(:list2) { List.create(name: 'List 2', user:) }
+    let!(:list1) { create(:list, name: 'List 1', user:) }
+    let!(:list2) { create(:list, name: 'List 2', user:) }
     let!(:other_user) { create(:user).tap(&:confirm) }
-    let!(:other_user_list) { List.create(name: 'Other User List', user: other_user) }
+    let!(:other_user_list) { create(:list, name: 'Other User List', user: other_user) }
 
     it 'retrieves all lists of the user and only the user' do
       get lists_path, headers: auth_headers
@@ -62,7 +62,7 @@ RSpec.describe ListsController, type: :request do
   end
 
   describe 'DELETE /lists/{id}' do
-    let!(:list) { List.create(name: 'List to delete', user:) }
+    let!(:list) { create(:list, name: 'List to delete', user:) }
 
     it 'deletes a list' do
       expect do
@@ -83,7 +83,7 @@ RSpec.describe ListsController, type: :request do
     end
 
     context 'when the list has tasks' do
-      let!(:task) { Task.create(name: 'Task 1', list:) }
+      let!(:task) { create(:task, name: 'Task 1', list:) }
 
       it 'deletes the list and its tasks' do
         expect do
@@ -110,7 +110,7 @@ RSpec.describe ListsController, type: :request do
 
     context 'when the list does not belong to the user' do
       let!(:other_user) { create(:user).tap(&:confirm) }
-      let!(:list) { List.create(name: 'List to delete', user: other_user) }
+      let!(:list) { create(:list, name: 'List to delete', user: other_user) }
 
       it 'returns a not found error' do
         delete list_path(list), headers: auth_headers
@@ -124,7 +124,7 @@ RSpec.describe ListsController, type: :request do
   end
 
   describe 'PATCH /lists/{id}' do
-    let!(:list) { List.create(name: 'List to update', user:) }
+    let!(:list) { create(:list, name: 'List to update', user:) }
 
     it 'updates a list' do
       patch(list_path(list), params: { name: 'Updated List' }.to_json, headers: auth_headers)
@@ -155,7 +155,7 @@ RSpec.describe ListsController, type: :request do
 
     context 'when the list does not belong to the user' do
       let!(:other_user) { create(:user).tap(&:confirm) }
-      let!(:list) { List.create(name: 'List to delete', user: other_user) }
+      let!(:list) { create(:list, name: 'List to delete', user: other_user) }
 
       it 'returns a not found error' do
         put(list_path(list), params: { name: 'Updated List' }.to_json, headers: auth_headers)
