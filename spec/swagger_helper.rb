@@ -4,12 +4,12 @@ require 'rails_helper'
 require 'yaml'
 
 RSpec.configure do |config|
-  config.swagger_root = Rails.root.join('public/api_docs').to_s
+  config.openapi_root = Rails.root.join('public/api_docs').to_s
 
   # Load the combined YAML file from app/api_docs
   api_docs_yaml = YAML.load_file(Rails.root.join('public/api_docs/api_documentation.yml'))
 
-  config.swagger_docs = {
+  config.openapi_specs = {
     'api_documentation.yaml' => {
       openapi: '3.0.1',
       info: {
@@ -30,5 +30,5 @@ RSpec.configure do |config|
     }
   }
 
-  config.swagger_format = :yaml
+  config.openapi_format = :yaml
 end
