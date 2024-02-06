@@ -4,8 +4,8 @@ class TasksController < ApplicationController
   before_action :authenticate_user!
   before_action :check_list_existence
   before_action :set_list
-  before_action :check_task_existence, only: %i[show update destroy toggle]
-  before_action :set_task, only: %i[show update destroy toggle]
+  before_action :check_task_existence, only: %i[show update destroy toggle switch_order]
+  before_action :set_task, only: %i[show update destroy toggle switch_order]
 
   # GET /lists/:list_id/tasks
   def index
@@ -50,6 +50,18 @@ class TasksController < ApplicationController
     @task = @list.tasks.find(params[:id])
     @task.update(done: !@task.done)
     render json: @task
+  end
+
+  # PATCH /lists/:list_id/task/id/switch_order
+  def switch_order
+    task1 = @list.tasks.find(params[:id])
+    task2 = @list.tasks.find(params[:task_id])
+
+    task1_order = task1.order
+    task1.update(order: task2.order)
+    task2.update(order: task1_order)
+
+    render json: { message: 'Tasks order have been successfully switched.' }
   end
 
   private

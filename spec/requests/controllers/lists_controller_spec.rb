@@ -24,6 +24,21 @@ RSpec.describe ListsController, type: :request do
       expect(json['name']).to eq('New List')
     end
 
+    context 'when lists already exist' do
+      let!(:list1) { create(:list, name: 'List 1', user:) }
+      let!(:list2) { create(:list, name: 'List 2', user:) }
+
+      it 'creates a new list with the correct order' do
+        post lists_path, params: { name: 'New List' }.to_json,
+                         headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(201)
+
+        expect(List.last.order).to eq(3)
+      end
+    end
+
     context 'when the auth token is not send' do
       it 'raises an unauthorized error' do
         post(lists_path, params: { name: 'New List' }.to_json,
@@ -161,6 +176,62 @@ RSpec.describe ListsController, type: :request do
         put(list_path(list), params: { name: 'Updated List' }.to_json, headers: auth_headers)
 
         expect(response).to have_http_status(:not_found)
+        expect(json['error']).to eq('List not found')
+      end
+    end
+  end
+
+  describe 'PATCH /lists/{id}/switch_order' do
+    let!(:list1) { create(:list, name: 'List 1', user:) }
+    let!(:list2) { create(:list, name: 'List 2', user:) }
+
+    it 'switches the order of two lists' do
+      order_list1 = list1.order
+      order_list2 = list2.order
+
+      patch(switch_order_list_path(list1), params: { id2: list2.id }.to_json, headers: auth_headers)
+
+      assert_request_schema_confirm
+      assert_response_schema_confirm(200)
+
+      expect(list1.reload.order).to eq(order_list2)
+      expect(list2.reload.order).to eq(order_list1)
+    end
+
+    context 'when the auth token is not send' do
+      it 'raises an unauthorized error' do
+        patch(switch_order_list_path(list1), params: { id2: list2.id }.to_json, headers:)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(401)
+      end
+    end
+
+    context 'when the list does not exist' do
+      let!(:list1) { { id: 9999 } }
+      let!(:list2) { { id: 9998 } }
+
+      it 'returns a not found error' do
+        patch(switch_order_list_path(list1), params: { id2: list2[:id] }.to_json, headers: auth_headers)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
+        expect(json['error']).to eq('List not found')
+      end
+    end
+
+    context 'when the list does not belong to the user' do
+      let!(:other_user) { create(:user).tap(&:confirm) }
+      let!(:list1) { create(:list, name: 'List 1', user: other_user) }
+      let!(:list2) { create(:list, name: 'List 2', user: other_user) }
+
+      it 'returns a not found error' do
+        patch(switch_order_list_path(list1), params: { id2: list2.id }.to_json, headers: auth_headers)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
         expect(json['error']).to eq('List not found')
       end
     end

@@ -8,9 +8,12 @@ Rails.application.routes.draw do
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
   resources :lists do
+    member do
+      patch :switch_order
+    end
     resources :tasks do
       member do
-        patch :toggle
+        patch :toggle, :switch_order
       end
     end
   end

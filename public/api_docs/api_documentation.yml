@@ -114,6 +114,47 @@ paths:
                 properties:
                   error:
                     type: string
+  /lists/{id}/switch_order:
+    patch:
+      summary: Switches the order of two lists
+      tags:
+        - Lists
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id2:
+                  type: integer
+      responses:
+        '200':
+          description: Lists order switched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: List not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /lists/{list_id}/tasks:
     get:
       summary: Retrieves all tasks for a specific list
@@ -304,6 +345,52 @@ paths:
                 properties:
                   error:
                     type: string
+  /lists/{list_id}/tasks/{id}/switch_order:
+    patch:
+      summary: Switches the order of two tasks in a list
+      tags:
+        - Tasks
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id2:
+                  type: integer
+      responses:
+        '200':
+          description: Tasks order switched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: List or Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /users:
     post:
       summary: Creates a new user
@@ -478,6 +565,8 @@ components:
           type: integer
         name:
           type: string
+        order:
+          type: integer
       required:
         - name
     ListCreate:
@@ -496,9 +585,12 @@ components:
           type: string
         done:
           type: boolean
+        order:
+          type: integer
       required:
         - name
         - done
+        - order
     TaskCreate:
       type: object
       properties:
@@ -515,6 +607,8 @@ components:
           type: string
         done:
           type: boolean
+        order:
+          type: integer
   responses:
     UnauthorizedError:
       description: Unauthorized user
