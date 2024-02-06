@@ -3,5 +3,6 @@
 FactoryBot.define do
   factory :list do
     name { 'Default List Name' }
+    sequence(:order)
   end
 end

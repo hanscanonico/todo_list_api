@@ -2,8 +2,8 @@
 
 class ListsController < ApplicationController
   before_action :authenticate_user!
-  before_action :check_list_existence, only: %i[show update destroy]
-  before_action :set_list, only: %i[show update destroy]
+  before_action :check_list_existence, only: %i[show update destroy switch_order]
+  before_action :set_list, only: %i[show update destroy switch_order]
 
   # GET /lists
   def index
@@ -11,7 +11,7 @@ class ListsController < ApplicationController
     render json: @lists
   end
 
-  # GET /lists/1
+  # GET /lists/id
   def show
     render json: @list
   end
@@ -19,6 +19,8 @@ class ListsController < ApplicationController
   # POST /lists
   def create
     @list = current_user.lists.new(list_params)
+    last_list_order = current_user.lists.maximum(:order)
+    @list.order = last_list_order ? last_list_order + 1 : 1
     if @list.save
       render json: @list, status: :created, location: list_url(@list)
     else
@@ -26,7 +28,7 @@ class ListsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /lists/1
+  # PATCH/PUT /lists/id
   def update
     if @list.update(list_params)
       render json: @list
@@ -35,10 +37,22 @@ class ListsController < ApplicationController
     end
   end
 
-  # DELETE /lists/1
+  # DELETE /lists/id
   def destroy
     @list.destroy
     render json: { message: 'List was successfully destroyed.' }
+  end
+
+  # PATCH /lists/id/switch_order
+  def switch_order
+    list1 = current_user.lists.find(params[:id])
+    list2 = current_user.lists.find(params[:id2])
+
+    list1_order = list1.order
+    list1.update(order: list2.order)
+    list2.update(order: list1_order)
+
+    render json: { message: 'Lists order were successfully switched.' }
   end
 
   private

@@ -30,6 +30,21 @@ RSpec.describe TasksController, type: :request do
       expect(json['name']).to eq('Task 3')
     end
 
+    context 'when tasks already exist' do
+      let!(:list3) { create(:list, name: 'list 3', user:) }
+      let!(:task1_3) { create(:task, name: 'Task 1', list: list3, order: 1) }
+      let!(:task2_3) { create(:task, name: 'Task 2', list: list3, order: 2) }
+
+      it 'creates a new task with the correct order' do
+        post list_tasks_path(list3), params: { name: 'Task 3' }.to_json,
+                                     headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(201)
+        expect(Task.last.order).to eq(3)
+      end
+    end
+
     context 'when the auth token is not send' do
       it 'raises an unauthorized error' do
         post(list_tasks_path(list1), params: { name: 'Task 3' }.to_json,
@@ -247,6 +262,69 @@ RSpec.describe TasksController, type: :request do
     context 'when the task belongs to a list of another user' do
       it 'returns a not found error' do
         patch toggle_list_task_path(list2, task3), headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
+        expect(json['error']).to eq('List not found')
+      end
+    end
+  end
+
+  describe 'PATCH /lists/:list_id/tasks/{id}/switch_order' do
+    it 'switches the order of two tasks' do
+      order_task1 = task1.order
+      order_task2 = task2.order
+
+      patch(switch_order_list_task_path(list1, task1), params: { task_id: task2.id }.to_json, headers: auth_headers)
+
+      assert_request_schema_confirm
+      assert_response_schema_confirm(200)
+
+      expect(task1.reload.order).to eq(order_task2)
+      expect(task2.reload.order).to eq(order_task1)
+    end
+
+    context 'when the auth token is not send' do
+      it 'raises an unauthorized error' do
+        patch(switch_order_list_task_path(list1, task1), params: { task_id: task2.id }.to_json, headers:)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(401)
+      end
+    end
+
+    context 'when the list does not exist' do
+      let!(:not_existing_list_id) { 9999 }
+
+      it 'returns a not found error' do
+        patch(switch_order_list_task_path(not_existing_list_id, task1), params: { task_id: task2.id }.to_json,
+                                                                        headers: auth_headers)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
+        expect(json['error']).to eq('List not found')
+      end
+    end
+
+    context 'when the task does not exist' do
+      let!(:not_existing_task_id) { 9999 }
+
+      it 'returns a not found error' do
+        patch(switch_order_list_task_path(list1, not_existing_task_id), params: { task_id: task2.id }.to_json,
+                                                                        headers: auth_headers)
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(404)
+
+        expect(json['error']).to eq('Task not found')
+      end
+    end
+
+    context 'when the task belongs to a list of another user' do
+      it 'returns a not found error' do
+        patch(switch_order_list_task_path(list2, task3), params: { task_id: task2.id }.to_json, headers: auth_headers)
 
         assert_request_schema_confirm
         assert_response_schema_confirm(404)
