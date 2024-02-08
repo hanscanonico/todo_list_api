@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-RSpec.describe Users::PasswordsController, type: :request do
+RSpec.describe Users::PasswordsController do
   include Committee::Rails::Test::Methods
 
   let!(:headers) { { 'Accept' => 'application/json', 'Content-Type' => 'application/json' } }

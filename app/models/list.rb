@@ -5,6 +5,6 @@ class List < ApplicationRecord
 
   belongs_to :user
 
-  validates_presence_of :name
-  validates_length_of :name, minimum: 2, maximum: 30
+  validates :name, presence: true
+  validates :name, length: { minimum: 2, maximum: 30 }
 end

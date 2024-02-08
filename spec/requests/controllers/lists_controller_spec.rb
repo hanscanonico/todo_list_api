@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-RSpec.describe ListsController, type: :request do
+RSpec.describe ListsController do
   include Committee::Rails::Test::Methods
 
   let!(:headers) { { 'Content-Type' => 'application/json' } }
@@ -25,8 +25,10 @@ RSpec.describe ListsController, type: :request do
     end
 
     context 'when lists already exist' do
-      let!(:list1) { create(:list, name: 'List 1', user:) }
-      let!(:list2) { create(:list, name: 'List 2', user:) }
+      before do
+        create(:list, name: 'List 1', user:, order: 1)
+        create(:list, name: 'List 2', user:, order: 2)
+      end
 
       it 'creates a new list with the correct order' do
         post lists_path, params: { name: 'New List' }.to_json,
@@ -51,10 +53,13 @@ RSpec.describe ListsController, type: :request do
   end
 
   describe 'GET /lists' do
-    let!(:list1) { create(:list, name: 'List 1', user:) }
-    let!(:list2) { create(:list, name: 'List 2', user:) }
-    let!(:other_user) { create(:user).tap(&:confirm) }
-    let!(:other_user_list) { create(:list, name: 'Other User List', user: other_user) }
+    let(:other_user) { create(:user).tap(&:confirm) }
+
+    before do
+      create(:list, name: 'List 1', user:)
+      create(:list, name: 'List 2', user:)
+      create(:list, name: 'Other User List', user: other_user)
+    end
 
     it 'retrieves all lists of the user and only the user' do
       get lists_path, headers: auth_headers
@@ -63,7 +68,7 @@ RSpec.describe ListsController, type: :request do
       assert_response_schema_confirm(200)
 
       expect(json.size).to eq(2)
-      expect(json.map { |l| l['name'] }).to match_array(['List 1', 'List 2'])
+      expect(json.pluck('name')).to contain_exactly('List 1', 'List 2')
     end
 
     context 'when the auth token is not send' do
@@ -98,7 +103,9 @@ RSpec.describe ListsController, type: :request do
     end
 
     context 'when the list has tasks' do
-      let!(:task) { create(:task, name: 'Task 1', list:) }
+      before do
+        create(:task, name: 'Task 1', list:)
+      end
 
       it 'deletes the list and its tasks' do
         expect do

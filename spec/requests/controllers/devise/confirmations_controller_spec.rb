@@ -2,25 +2,26 @@
 
 require 'rails_helper'
 
-RSpec.describe Devise::ConfirmationsController, type: :request do
+RSpec.describe Devise::ConfirmationsController do
   include Committee::Rails::Test::Methods
 
   describe 'GET /resource/confirmation' do
     let!(:user) do
-      create(:user, confirmation_sent_at: Date.today, confirmation_token: 'abcde')
+      create(:user, confirmation_sent_at: Time.zone.today, confirmation_token: 'abcde')
     end
+
     it 'confirms a user' do
       token = user.confirmation_token
 
-      expect(user.confirmed_at?).to eq(false)
-      expect(user.confirmation_token_valid?).to eq(true)
+      expect(user.confirmed_at?).to be(false)
+      expect(user.confirmation_token_valid?).to be(true)
 
       get user_confirmation_path(confirmation_token: token)
 
       assert_request_schema_confirm
       assert_response_schema_confirm(200)
 
-      expect(user.reload.confirmed_at?).to eq(true)
+      expect(user.reload.confirmed_at?).to be(true)
     end
 
     context 'when the token is invalid' do

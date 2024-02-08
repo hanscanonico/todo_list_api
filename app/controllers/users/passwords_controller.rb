@@ -24,7 +24,7 @@ module Users
       yield resource if block_given?
 
       if resource.errors.empty?
-        resource.unlock_access! if unlockable?(resource)
+        unlock_resource_if_unlockable
         render json: { message: 'Password reset successfully.' }, status: :ok
       else
         render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
@@ -32,6 +32,10 @@ module Users
     end
 
     protected
+
+    def unlock_resource_if_unlockable
+      resource.unlock_access! if unlockable?(resource)
+    end
 
     def resource_params
       params.require(:user).permit(:email, :password, :password_confirmation, :reset_password_token)

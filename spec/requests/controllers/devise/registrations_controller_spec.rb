@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Devise::RegistrationsController, type: :request do
+RSpec.describe Devise::RegistrationsController do
   include Committee::Rails::Test::Methods
 
   describe 'POST /users' do

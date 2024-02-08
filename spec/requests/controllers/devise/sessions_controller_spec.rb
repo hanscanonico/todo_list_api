@@ -3,10 +3,10 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-RSpec.describe Devise::SessionsController, type: :request do
+RSpec.describe Devise::SessionsController do
   include Committee::Rails::Test::Methods
 
-  let!(:user) { create(:user, confirmation_sent_at: Date.today, confirmation_token: 'abcde').tap(&:confirm) }
+  let!(:user) { create(:user, confirmation_sent_at: Time.zone.today, confirmation_token: 'abcde').tap(&:confirm) }
 
   let!(:headers) { { 'Accept' => 'application/json', 'Content-Type' => 'application/json' } }
 
@@ -21,7 +21,7 @@ RSpec.describe Devise::SessionsController, type: :request do
       assert_response_schema_confirm(201)
 
       expect(response.headers['Authorization']).to be_present
-      token = response.headers['Authorization'].split(' ').last
+      token = response.headers['Authorization'].split.last
       expect { JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key) }.not_to raise_error
     end
 
@@ -33,13 +33,15 @@ RSpec.describe Devise::SessionsController, type: :request do
 
   describe 'DELETE /users/sign_out' do
     it 'signs out the user' do
-      post(user_session_path, params: { user: { email: user.email, password: user.password } }.to_json,
-                              headers:)
+      post(user_session_path,
+           params: { user: { email: user.email,
+                             password: user.password } }.to_json,
+           headers:)
 
       token = response.headers['Authorization'].split.last
+      decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key).first['jti']
 
-      expect(AllowlistedJwt.exists?(jti: JWT.decode(token,
-                                                    Rails.application.credentials.devise_jwt_secret_key).first['jti'])).to be true
+      expect(AllowlistedJwt.exists?(jti: decoded_token)).to be true
 
       auth_headers = { 'Authorization' => "Bearer #{token}" }
 
@@ -47,8 +49,8 @@ RSpec.describe Devise::SessionsController, type: :request do
       assert_request_schema_confirm
       assert_response_schema_confirm(204)
 
-      expect(AllowlistedJwt.exists?(jti: JWT.decode(token,
-                                                    Rails.application.credentials.devise_jwt_secret_key).first['jti'])).to be false
+      expect(AllowlistedJwt.exists?(jti: decoded_token))
+        .to be false
     end
   end
 end

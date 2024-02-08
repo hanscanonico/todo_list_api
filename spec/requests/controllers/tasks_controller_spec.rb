@@ -3,7 +3,7 @@
 require 'swagger_helper'
 require 'devise/jwt/test_helpers'
 
-RSpec.describe TasksController, type: :request do
+RSpec.describe TasksController do
   include Committee::Rails::Test::Methods
 
   let!(:list1) { create(:list, name: 'list 1', user:) }
@@ -32,8 +32,11 @@ RSpec.describe TasksController, type: :request do
 
     context 'when tasks already exist' do
       let!(:list3) { create(:list, name: 'list 3', user:) }
-      let!(:task1_3) { create(:task, name: 'Task 1', list: list3, order: 1) }
-      let!(:task2_3) { create(:task, name: 'Task 2', list: list3, order: 2) }
+
+      before do
+        create(:task, name: 'Task 1', list: list3, order: 1)
+        create(:task, name: 'Task 2', list: list3, order: 2)
+      end
 
       it 'creates a new task with the correct order' do
         post list_tasks_path(list3), params: { name: 'Task 3' }.to_json,
@@ -103,6 +106,7 @@ RSpec.describe TasksController, type: :request do
 
     context 'when the list does not exist' do
       let!(:not_existing_list_id) { 9999 }
+
       it 'returns a not found error' do
         delete list_task_path(not_existing_list_id, task1), headers: auth_headers
 
@@ -115,6 +119,7 @@ RSpec.describe TasksController, type: :request do
 
     context 'when the task does not exist' do
       let!(:not_existing_task_id) { 9999 }
+
       it 'returns a not found error' do
         delete list_task_path(list1, not_existing_task_id), headers: auth_headers
 
@@ -201,13 +206,13 @@ RSpec.describe TasksController, type: :request do
   describe 'PATCH /lists/:list_id/tasks/{id}/toggle' do
     context 'when the task is not done' do
       it 'does the task' do
-        expect(task1.done).to eq(false)
+        expect(task1.done).to be(false)
         patch toggle_list_task_path(list1, task1), headers: auth_headers
 
         assert_request_schema_confirm
         assert_response_schema_confirm(200)
 
-        expect(task1.reload.done).to eq(true)
+        expect(task1.reload.done).to be(true)
       end
     end
 
@@ -222,14 +227,15 @@ RSpec.describe TasksController, type: :request do
 
     context 'when the task is done' do
       let!(:task1) { create(:task, name: 'task 1', list: list1, done: true) }
+
       it 'undoes the task' do
-        expect(task1.done).to eq(true)
+        expect(task1.done).to be(true)
         patch toggle_list_task_path(list1, task1), headers: auth_headers
 
         assert_request_schema_confirm
         assert_response_schema_confirm(200)
 
-        expect(task1.reload.done).to eq(false)
+        expect(task1.reload.done).to be(false)
       end
     end
 
