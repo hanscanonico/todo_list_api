@@ -36,7 +36,7 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = "#{::Rails.root}/spec/fixtures"
+  config.fixture_paths = Rails.root.join('spec/fixtures').to_s
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -46,7 +46,7 @@ RSpec.configure do |config|
   config.include RequestSpecHelper, type: :request
   config.add_setting :committee_options
   config.committee_options = {
-    schema_path: Rails.root.join('public', 'api_docs', 'api_documentation.yml'),
+    schema_path: Rails.public_path.join('api_docs/api_documentation.yml'),
     query_hash_key: 'rack.request.query_hash',
     parse_response_by_content_type: false,
     strict_reference_validation: true

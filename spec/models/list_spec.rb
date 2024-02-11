@@ -2,35 +2,36 @@
 
 require 'rails_helper'
 
-RSpec.describe List, type: :model do
+RSpec.describe List do
   let!(:user) { create(:user) }
+
   # Test suite for validating the presence of the list's name
   describe 'validations' do
     it 'is valid with valid attributes' do
-      list = List.new(name: 'Groceries', user:)
+      list = described_class.new(name: 'Groceries', user:)
       expect(list).to be_valid
     end
 
     it 'is not valid without a name' do
-      list = List.new(name: nil)
+      list = described_class.new(name: nil)
       expect(list).not_to be_valid
     end
 
     it 'is not valid with a name shorter than 2 characters' do
-      list = List.new(name: 'a')
+      list = described_class.new(name: 'a')
       expect(list).not_to be_valid
     end
 
     it 'is not valid with a name longer than 30 characters' do
-      list = List.new(name: 'a' * 31)
+      list = described_class.new(name: 'a' * 31)
       expect(list).not_to be_valid
     end
   end
 
   # Test suite for List model associations
   describe 'associations' do
-    it 'should have many tasks' do
-      assc = List.reflect_on_association(:tasks)
+    it 'has many tasks' do
+      assc = described_class.reflect_on_association(:tasks)
       expect(assc.macro).to eq :has_many
     end
   end

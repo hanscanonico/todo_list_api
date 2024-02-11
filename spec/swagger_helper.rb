@@ -4,10 +4,10 @@ require 'rails_helper'
 require 'yaml'
 
 RSpec.configure do |config|
-  config.openapi_root = Rails.root.join('public/api_docs').to_s
+  config.openapi_root = Rails.public_path.join('api_docs').to_s
 
   # Load the combined YAML file from app/api_docs
-  api_docs_yaml = YAML.load_file(Rails.root.join('public/api_docs/api_documentation.yml'))
+  api_docs_yaml = YAML.load_file(Rails.public_path.join('api_docs/api_documentation.yml'))
 
   config.openapi_specs = {
     'api_documentation.yaml' => {

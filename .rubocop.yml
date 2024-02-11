@@ -1,0 +1,52 @@
+require:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-factory_bot
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/schema.rb'
+    - 'bin/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+
+# Rails-specific configuration
+Rails:
+  Enabled: true
+
+
+
+Metrics/BlockLength:
+  AllowedMethods: ['describe', 'context', 'it', 'feature', 'scenario', 'background']
+  Exclude:
+    - 'config/**/*.rb'
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'config/**/*.rb'
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'spec/**/**/**/*.rb'
+    - 'db/data/*.rb'
+RSpec/MultipleMemoizedHelpers:
+  Max: 20
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/IndexedLet:
+  Enabled: false
+RSpec/ExampleLength:
+  Max: 20
+Naming/VariableNumber:
+  Enabled: false
+
+# Style
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+# Documentation
+Style/Documentation:
+  Enabled: false
+
