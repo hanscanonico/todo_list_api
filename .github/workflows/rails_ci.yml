@@ -1,23 +1,28 @@
 name: Rails CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
 env:
-    RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-    FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     services:
       postgres:
-        image: postgres:11
+        image: postgres:11-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: myapp_test
         ports:
           - 5432:5432
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -25,19 +30,13 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.2
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev
-          gem install bundler
-          bundle install
+          bundler-cache: true
 
       - name: Set up Database
         env:
@@ -51,11 +50,27 @@ jobs:
         env:
           RAILS_ENV: test
         run: |
-          bundle exec rspec # or your test suite command
+          bundle exec rspec
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - name: Lint with RuboCop
+        run: bundle exec rubocop --parallel
+
   deploy:
+    needs: [build, lint]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy
