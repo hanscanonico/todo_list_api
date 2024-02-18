@@ -8,7 +8,7 @@ RSpec.describe List do
   # Test suite for validating the presence of the list's name
   describe 'validations' do
     it 'is valid with valid attributes' do
-      list = described_class.new(name: 'Groceries', user:)
+      list = described_class.new(name: 'Groceries', user:, order: 1)
       expect(list).to be_valid
     end
 
@@ -24,6 +24,21 @@ RSpec.describe List do
 
     it 'is not valid with a name longer than 30 characters' do
       list = described_class.new(name: 'a' * 31)
+      expect(list).not_to be_valid
+    end
+
+    it 'is not valid without an order' do
+      list = described_class.new(order: nil)
+      expect(list).not_to be_valid
+    end
+
+    it 'is not valid with an order less than 1' do
+      list = described_class.new(order: 0)
+      expect(list).not_to be_valid
+    end
+
+    it 'is not valid with an order that is not an integer' do
+      list = described_class.new(order: 'not an integer')
       expect(list).not_to be_valid
     end
   end
