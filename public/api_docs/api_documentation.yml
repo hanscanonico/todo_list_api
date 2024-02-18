@@ -38,6 +38,15 @@ paths:
                 $ref: '#/components/schemas/ListCreate'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /lists/{id}:
     get:
       summary: Retrieves a specific list
@@ -203,6 +212,15 @@ paths:
                 $ref: '#/components/schemas/Task'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid task
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
         '404':
           description: List not found
           content:

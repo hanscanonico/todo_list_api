@@ -30,6 +30,30 @@ RSpec.describe TasksController do
       expect(json['name']).to eq('Task 3')
     end
 
+    context 'when the task name is too short' do
+      it 'returns an error' do
+        post list_tasks_path(list1), params: { name: 'T' }.to_json,
+                                     headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(422)
+
+        expect(json['name']).to eq(['is too short (minimum is 3 characters)'])
+      end
+    end
+
+    context 'when the task name is too long' do
+      it 'returns an error' do
+        post list_tasks_path(list1), params: { name: 'T' * 31 }.to_json,
+                                     headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(422)
+
+        expect(json['name']).to eq(['is too long (maximum is 30 characters)'])
+      end
+    end
+
     context 'when tasks already exist' do
       let!(:list3) { create(:list, name: 'list 3', user:) }
 

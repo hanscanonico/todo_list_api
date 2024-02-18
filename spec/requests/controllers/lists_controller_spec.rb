@@ -24,6 +24,30 @@ RSpec.describe ListsController do
       expect(json['name']).to eq('New List')
     end
 
+    context 'when the list name is too short' do
+      it 'returns an error' do
+        post lists_path, params: { name: 'A' }.to_json,
+                         headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(422)
+
+        expect(json['name']).to eq(['is too short (minimum is 2 characters)'])
+      end
+    end
+
+    context 'when the list name is too long' do
+      it 'returns an error' do
+        post lists_path, params: { name: 'A' * 31 }.to_json,
+                         headers: auth_headers
+
+        assert_request_schema_confirm
+        assert_response_schema_confirm(422)
+
+        expect(json['name']).to eq(['is too long (maximum is 30 characters)'])
+      end
+    end
+
     context 'when lists already exist' do
       before do
         create(:list, name: 'List 1', user:, order: 1)
