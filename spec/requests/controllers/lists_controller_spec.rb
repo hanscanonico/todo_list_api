@@ -56,19 +56,19 @@ RSpec.describe ListsController do
     let(:other_user) { create(:user).tap(&:confirm) }
 
     before do
-      create(:list, name: 'List 1', user:)
-      create(:list, name: 'List 2', user:)
-      create(:list, name: 'Other User List', user: other_user)
+      create(:list, name: 'List 1', user:, order: 2)
+      create(:list, name: 'List 2', user:, order: 1)
+      create(:list, name: 'Other User List', user: other_user, order: 1)
     end
 
-    it 'retrieves all lists of the user and only the user' do
+    it 'retrieves all lists of the user and only the user, correctly ordered' do
       get lists_path, headers: auth_headers
 
       assert_request_schema_confirm
       assert_response_schema_confirm(200)
 
       expect(json.size).to eq(2)
-      expect(json.pluck('name')).to contain_exactly('List 1', 'List 2')
+      expect(json.pluck('name')).to eq(['List 2', 'List 1'])
     end
 
     context 'when the auth token is not send' do

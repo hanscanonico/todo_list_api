@@ -134,6 +134,7 @@ paths:
               properties:
                 id2:
                   type: integer
+                  required: true
       responses:
         '200':
           description: Lists order switched
@@ -370,6 +371,7 @@ paths:
               properties:
                 id2:
                   type: integer
+                  required: true
       responses:
         '200':
           description: Tasks order switched

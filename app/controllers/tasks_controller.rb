@@ -9,7 +9,7 @@ class TasksController < ApplicationController
 
   # GET /lists/:list_id/tasks
   def index
-    @tasks = @list.tasks
+    @tasks = @list.tasks.order(:order)
     render json: @tasks
   end
 
@@ -55,7 +55,7 @@ class TasksController < ApplicationController
   # PATCH /lists/:list_id/task/id/switch_order
   def switch_order
     task1 = @list.tasks.find(params[:id])
-    task2 = @list.tasks.find(params[:task_id])
+    task2 = @list.tasks.find(params[:id2])
 
     task1_order = task1.order
     task1.update(order: task2.order)

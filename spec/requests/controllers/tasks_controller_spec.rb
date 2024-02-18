@@ -8,8 +8,8 @@ RSpec.describe TasksController do
 
   let!(:list1) { create(:list, name: 'list 1', user:) }
   let!(:list2) { create(:list, name: 'list 2', user: other_user) }
-  let!(:task1) { create(:task, name: 'task 1', list: list1, done: false) }
-  let!(:task2) { create(:task, name: 'task 2', list: list1) }
+  let!(:task1) { create(:task, name: 'task 1', list: list1, done: false, order: 2) }
+  let!(:task2) { create(:task, name: 'task 2', list: list1, order: 1) }
   let!(:task3) { create(:task, name: 'task 3', list: list2) }
 
   let!(:headers) { { 'Content-Type' => 'application/json' } }
@@ -74,14 +74,14 @@ RSpec.describe TasksController do
   end
 
   describe 'GET /lists/:list_id/tasks' do
-    it 'shows all tasks for a specific list, for the current user' do
+    it 'shows all tasks for a specific list, for the current user, correctly ordered' do
       get list_tasks_path(list1), headers: auth_headers
 
       assert_request_schema_confirm
       assert_response_schema_confirm(200)
 
-      expect(response.parsed_body.size).to eq(2)
-      expect(response.parsed_body).to include(include('name' => 'task 1'), include('name' => 'task 2'))
+      expect(json.size).to eq(2)
+      expect(json.pluck('name')).to eq(['task 2', 'task 1'])
     end
   end
 
@@ -282,7 +282,7 @@ RSpec.describe TasksController do
       order_task1 = task1.order
       order_task2 = task2.order
 
-      patch(switch_order_list_task_path(list1, task1), params: { task_id: task2.id }.to_json, headers: auth_headers)
+      patch(switch_order_list_task_path(list1, task1), params: { id2: task2.id }.to_json, headers: auth_headers)
 
       assert_request_schema_confirm
       assert_response_schema_confirm(200)

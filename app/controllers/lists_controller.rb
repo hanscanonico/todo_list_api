@@ -7,7 +7,7 @@ class ListsController < ApplicationController
 
   # GET /lists
   def index
-    @lists = current_user.lists
+    @lists = current_user.lists.order(:order)
     render json: @lists
   end
 
