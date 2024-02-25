@@ -97,7 +97,7 @@ Rails.application.configure do
     authentication: :plain,
     user_name: 'apikey',
     password: Rails.application.credentials.mail_api_key,
-    domain: 'em7215.spanishcourseonline.com',
+    domain: 'em8128.generic-inbox.com',
     enable_starttls_auto: true
   }
 end
