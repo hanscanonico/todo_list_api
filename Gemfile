@@ -68,6 +68,6 @@ end
 
 gem 'dockerfile-rails', '>= 1.5', group: :development
 
-gem 'sentry-ruby', '~> 5.16'
+gem 'sentry-ruby', '~> 5.17'
 
-gem 'sentry-rails', '~> 5.16'
+gem 'sentry-rails', '~> 5.17'
