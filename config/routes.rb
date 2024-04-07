@@ -2,8 +2,14 @@
 
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    passwords: 'users/passwords'
+    passwords: 'users/passwords',
+    omniauth_callbacks: 'users/omniauth_callbacks',
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    confirmations: 'users/confirmations'
   }, defaults: { format: :json }
+
+  get '/auth/google_oauth2', to: 'auth#redirect_to_google'
 
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
