@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ListsController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   before_action :authenticate_user!
   before_action :check_list_existence, only: %i[show update destroy switch_order]
   before_action :set_list, only: %i[show update destroy switch_order]

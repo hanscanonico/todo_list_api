@@ -16,6 +16,12 @@ gem 'data_migrate'
 gem 'devise'
 gem 'devise-jwt'
 gem 'faker'
+gem 'jwt'
+gem 'warden-jwt_auth'
+
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -43,7 +49,7 @@ gem 'rswag-ui'
 # gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
-gem 'rack-cors'
+# gem 'rack-cors'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -55,6 +61,7 @@ group :development, :test do
   gem 'byebug'
 
   gem 'factory_bot_rails'
+  gem 'rack-cors'
 end
 
 group :development do
