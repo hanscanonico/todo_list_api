@@ -2,7 +2,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'localhost:3000', 'localhost:3030'
+    origins 'localhost:3000', 'localhost:3030', 'https://todo-list-app-manager.fly.dev'
 
     resource '*',
              headers: :any,
