@@ -20,7 +20,7 @@ module Users
       redirect_uri = session[:redirect_uri]
       redirect_url = "#{redirect_uri}?token=#{token}"
       session[:redirect_uri] = nil
-      redirect_to redirect_url
+      redirect_to redirect_url, allow_other_host: true
     end
   end
 end
