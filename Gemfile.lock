@@ -179,8 +179,6 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
-    nokogiri (1.16.4-aarch64-linux)
-      racc (~> 1.4)
     nokogiri (1.16.4-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.4-x86_64-linux)
@@ -204,7 +202,7 @@ GEM
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
-    omniauth-rails_csrf_protection (1.0.1)
+    omniauth-rails_csrf_protection (1.0.2)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     openapi_parser (2.0.0)
@@ -364,7 +362,6 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
-  aarch64-linux
   arm64-darwin-22
   x86_64-linux
 
